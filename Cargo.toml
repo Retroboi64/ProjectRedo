@@ -1,0 +1,8 @@
+[workspace]
+resolver = "3"
+members = [
+    "PREngine",
+    "PRGame",
+    "vendor/windowed",
+    "vendor/numix"
+]

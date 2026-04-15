@@ -1,0 +1,6 @@
+[submodule "vendor/windowed"]
+	path = vendor/windowed
+	url = https://github.com/Retroboi64/windowed.git
+[submodule "vendor/numix"]
+	path = vendor/numix
+	url = https://github.com/Retroboi64/numix.git
