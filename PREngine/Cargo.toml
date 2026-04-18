@@ -1,4 +1,8 @@
 [package]
-name = "PREngine"
+name = "pr_engine"
 version = "0.0.1"
 edition = "2024"
+
+[lib]
+name = "engine" # Remember this output ("lib" + name) so libengine.so is generated
+crate-type = ["cdylib"]
