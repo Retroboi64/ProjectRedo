@@ -14,15 +14,7 @@ pub struct PRApi {
     lib: Library,
 
     pub test: Function, // fn test()
-
-    // Examples
-    pub get_scale: Function,     // fn get_scale()     -> f32
-    pub get_ratio: Function,     // fn get_ratio()     -> f64
-    pub get_frame: Function,     // fn get_frame()     -> i32
-    pub get_timestamp: Function, // fn get_timestamp() -> i64
-    pub get_flags: Function,     // fn get_flags()     -> u32
-    pub get_uid: Function,       // fn get_uid()       -> u64
-    pub get_version: Function,   // fn get_version()   -> u8
+    pub start: Function,
 }
 
 impl PRApi {
@@ -31,20 +23,16 @@ impl PRApi {
             lib: unsafe { Library::new(library_path).unwrap() },
 
             test: Function::new("test", FnSignature::Void),
-
-            // Examples
-            get_scale: Function::new("get_scale", FnSignature::ReturnF32),
-            get_ratio: Function::new("get_ratio", FnSignature::ReturnF64),
-            get_frame: Function::new("get_frame", FnSignature::ReturnI32),
-            get_timestamp: Function::new("get_timestamp", FnSignature::ReturnI64),
-            get_flags: Function::new("get_flags", FnSignature::ReturnU32),
-            get_uid: Function::new("get_uid", FnSignature::ReturnU64),
-            get_version: Function::new("get_version", FnSignature::ReturnU8),
+            start: Function::new("start", FnSignature::Void),
         }
     }
 
     pub fn test(&self) -> Result<(), libloading::Error> {
         self.call_void("test")
+    }
+
+    pub fn start(&self) -> Result<(), libloading::Error> {
+        self.call_void("start")
     }
 
     pub fn get_scale(&self) -> Result<f32, libloading::Error> {

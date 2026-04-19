@@ -6,3 +6,7 @@ edition = "2024"
 [lib]
 name = "engine" # Remember this output ("lib" + name) so libengine.so is generated
 crate-type = ["cdylib"]
+
+[dependencies]
+windowed = { path = "../vendor/windowed" }
+numix = { path = "../vendor/numix" }
