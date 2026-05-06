@@ -66,6 +66,7 @@ name = "pr_engine"
 version = "0.0.1"
 dependencies = [
  "numix",
+ "probably_fine_log",
  "windowed",
 ]
 
@@ -75,6 +76,10 @@ version = "0.0.1"
 dependencies = [
  "pr_api",
 ]
+
+[[package]]
+name = "probably_fine_log"
+version = "0.1.0"
 
 [[package]]
 name = "windowed"

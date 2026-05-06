@@ -1,15 +1,23 @@
+#![allow(unused_imports)]
+
 mod core;
 
 use core::engine::Engine;
 
-#[unsafe(no_mangle)]
-pub extern "C" fn test() {
-    println!("Hello!! From PR_Engine");
-}
+use probably_fine_log::{Level, StderrLogger, set_logger, set_max_level};
+use probably_fine_log::{debug, error, info, trace, warn};
 
-// We are not making Engine Instances yet just to make starting devlopment simpler
 #[unsafe(no_mangle)]
 pub extern "C" fn start() {
+    set_logger(StderrLogger::new()).unwrap();
+    set_max_level(Level::Debug);
+
+    info!("Starting PR_Engine");
+
     let engine = Engine::new();
-    engine.run();
+
+    if let Err(e) = engine.run() {
+        error!("Engine exited with error: {}", e);
+        std::process::exit(1);
+    }
 }

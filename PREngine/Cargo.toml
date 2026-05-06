@@ -10,3 +10,4 @@ crate-type = ["cdylib"]
 [dependencies]
 windowed = { path = "../vendor/windowed" }
 numix = { path = "../vendor/numix" }
+probably_fine_log = { path = "../vendor/probably_fine_log" }

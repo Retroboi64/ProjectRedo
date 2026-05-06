@@ -1,7 +1,18 @@
-use crate::core::window::WindowManager;
+use crate::core::{
+    error::EngineError,
+    window::{WindowDescriptor, WindowManager},
+};
+use probably_fine_log::{debug, error, info, warn};
+use windowed::{ControlFlow, Event, Key};
 
 pub struct Engine {
     window_manager: WindowManager,
+}
+
+impl Default for Engine {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Engine {
@@ -11,12 +22,23 @@ impl Engine {
         }
     }
 
-    pub fn run(mut self) {
-        match self.window_manager.create_window("PREngine", 800, 600) {
-            Ok(_) => {
-                println!("worked")
-            }
-            Err(e) => println!("Failed to create window: {:?}", e),
-        }
+    fn setup(&mut self) {
+        self.window_manager.register(WindowDescriptor::default());
+        debug!("Engine setup complete");
+    }
+
+    pub fn run(mut self) -> Result<(), EngineError> {
+        info!("Engine starting");
+        self.setup();
+
+        self.window_manager
+            .run_primary(|event, _window| match event {
+                Event::CloseRequested => ControlFlow::Exit,
+                Event::KeyDown(Key::Escape) => ControlFlow::Exit,
+                _ => ControlFlow::Continue,
+            })?;
+
+        info!("Engine shut down cleanly");
+        Ok(())
     }
 }
