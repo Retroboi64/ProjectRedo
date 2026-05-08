@@ -3,6 +3,7 @@
 mod core;
 
 use core::engine::Engine;
+use core::instance::EngineRegistry;
 
 use probably_fine_log::{Level, StderrLogger, set_logger, set_max_level};
 use probably_fine_log::{debug, error, info, trace, warn};
@@ -14,7 +15,12 @@ pub extern "C" fn start() {
 
     info!("Starting PR_Engine");
 
-    let engine = Engine::new();
+    let mut engine = Engine::new();
+
+    engine.create_window("main", 1920, 1080);
+    engine.create_window("minimap", 320, 320);
+    engine.create_window_persistent("hud", 620, 800);
+    engine.create_window_persistent("console", 800, 400);
 
     if let Err(e) = engine.run() {
         error!("Engine exited with error: {}", e);
