@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 
+use std::process::id;
+
 use crate::core::{
     error::{EngineError, StateError},
     window::{WindowDescriptor, WindowManager, WindowState},
@@ -26,10 +28,47 @@ impl std::fmt::Display for EngineLifecycle {
     }
 }
 
+pub struct EngineManager {
+    pub engines: Vec<Engine>,
+    pub current: usize,
+}
+
+impl EngineManager {
+    pub fn new() -> Self {
+        Self {
+            engines: Vec::new(),
+            current: 0,
+        }
+    }
+
+    pub fn create_engine(&mut self) -> usize {
+        let id = self.current + 1;
+        info!("Creating engine: {}", id);
+
+        self.engines.push(Engine::new());
+        self.current = id;
+
+        id
+    }
+
+    pub fn get_engine(&mut self, id: usize) -> &mut Engine {
+        info!("Getting engine: {}", id);
+        &mut self.engines[id]
+    }
+
+    pub fn get_current_engine(&mut self) -> &mut Engine {
+        let id = self.current;
+
+        info!("Getting current: {}", id);
+        &mut self.engines[id]
+    }
+}
+
 pub struct Engine {
     window_manager: WindowManager,
     lifecycle: EngineLifecycle,
     label: String,
+    id: Option<i32>,
 }
 
 impl Default for Engine {
@@ -44,6 +83,7 @@ impl Engine {
             window_manager: WindowManager::new(),
             lifecycle: EngineLifecycle::Created,
             label: String::from("unnamed"),
+            id: Option::None,
         }
     }
 
@@ -52,6 +92,7 @@ impl Engine {
             window_manager: WindowManager::new(),
             lifecycle: EngineLifecycle::Created,
             label: label.to_string(),
+            id: Option::None,
         }
     }
 
@@ -112,15 +153,23 @@ impl Engine {
     }
 
     pub fn create_window(&mut self, name: &str, width: u32, height: u32) -> usize {
-        let id = self.window_manager.register_window(name, width, height);
+        let id = self.window_manager.register_window(
+            name,
+            width,
+            height,
+            crate::core::window::WindowGraphics::None,
+        );
         debug!("Engine '{}' created window {}", self.label, id);
         id
     }
 
     pub fn create_window_persistent(&mut self, name: &str, width: u32, height: u32) -> usize {
-        let id = self
-            .window_manager
-            .register_window_persistent(name, width, height);
+        let id = self.window_manager.register_window_persistent(
+            name,
+            width,
+            height,
+            crate::core::window::WindowGraphics::None,
+        );
         debug!("Engine '{}' created persistent window {}", self.label, id);
         id
     }
@@ -204,7 +253,7 @@ impl Engine {
         self.window_manager.window_exists(id)
     }
 
-    pub fn run(mut self) -> Result<(), EngineError> {
+    pub fn run(&mut self) -> Result<(), EngineError> {
         if self.lifecycle == EngineLifecycle::Shutdown {
             return Err(
                 StateError::InvalidOperation("cannot run a shut-down engine".to_string()).into(),

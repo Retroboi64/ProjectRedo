@@ -7,6 +7,15 @@ use probably_fine_log::{debug, error, info, warn};
 use windowed::{ControlFlow, Event, Window, WindowConfig};
 
 #[derive(Debug, Clone, PartialEq)]
+pub enum WindowGraphics {
+    None,
+    OpenGL,
+    VULKAN,
+    DX11,
+    DX12,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum WindowState {
     Active,
     Destroyed,
@@ -27,6 +36,7 @@ pub struct WindowDescriptor {
     pub width: u32,
     pub height: u32,
     pub persist: bool,
+    pub graphicsAPI: WindowGraphics,
 }
 
 impl Default for WindowDescriptor {
@@ -36,6 +46,7 @@ impl Default for WindowDescriptor {
             width: 800,
             height: 600,
             persist: false,
+            graphicsAPI: WindowGraphics::None,
         }
     }
 }
@@ -90,21 +101,35 @@ impl WindowManager {
         id
     }
 
-    pub fn register_window(&mut self, title: &str, width: u32, height: u32) -> usize {
+    pub fn register_window(
+        &mut self,
+        title: &str,
+        width: u32,
+        height: u32,
+        graphics: WindowGraphics,
+    ) -> usize {
         self.register(WindowDescriptor {
             title: title.to_string(),
             width,
             height,
             persist: false,
+            graphicsAPI: graphics,
         })
     }
 
-    pub fn register_window_persistent(&mut self, title: &str, width: u32, height: u32) -> usize {
+    pub fn register_window_persistent(
+        &mut self,
+        title: &str,
+        width: u32,
+        height: u32,
+        graphics: WindowGraphics,
+    ) -> usize {
         self.register(WindowDescriptor {
             title: title.to_string(),
             width,
             height,
             persist: true,
+            graphicsAPI: graphics,
         })
     }
 

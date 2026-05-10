@@ -13,8 +13,8 @@ use libloading::{Library, Symbol};
 pub struct PRApi {
     lib: Library,
 
-    pub test: Function, // fn test()
     pub start: Function,
+    pub create_engine: Function,
 }
 
 impl PRApi {
@@ -22,17 +22,17 @@ impl PRApi {
         Self {
             lib: unsafe { Library::new(library_path).unwrap() },
 
-            test: Function::new("test", FnSignature::Void),
             start: Function::new("start", FnSignature::Void),
+            create_engine: Function::new("CreateEngine", FnSignature::ReturnI32),
         }
-    }
-
-    pub fn test(&self) -> Result<(), libloading::Error> {
-        self.call_void("test")
     }
 
     pub fn start(&self) -> Result<(), libloading::Error> {
         self.call_void("start")
+    }
+
+    pub fn create_engine(&self) -> Result<i32, libloading::Error> {
+        self.call_i32("CreateEngine")
     }
 
     pub fn get_scale(&self) -> Result<f32, libloading::Error> {

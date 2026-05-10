@@ -3,10 +3,11 @@
 mod core;
 
 use core::engine::Engine;
-use core::instance::EngineRegistry;
 
 use probably_fine_log::{Level, StderrLogger, set_logger, set_max_level};
 use probably_fine_log::{debug, error, info, trace, warn};
+
+use crate::core::engine::EngineManager;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn start() {
@@ -18,11 +19,25 @@ pub extern "C" fn start() {
     let mut engine = Engine::new();
 
     engine.create_window("main", 1920, 1080);
-    engine.create_window("minimap", 320, 320);
-    engine.create_window_persistent("hud", 620, 800);
-    engine.create_window_persistent("console", 800, 400);
 
     if let Err(e) = engine.run() {
+        error!("Engine exited with error: {}", e);
+        std::process::exit(1);
+    }
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn CreateEngine() {
+    set_logger(StderrLogger::new()).unwrap();
+    set_max_level(Level::Debug);
+
+    let mut em = EngineManager::new();
+    em.create_engine();
+    let e1 = em.get_engine(0);
+
+    e1.create_window("name", 620, 800);
+    
+    if let Err(e) = e1.run() {
         error!("Engine exited with error: {}", e);
         std::process::exit(1);
     }
