@@ -65,8 +65,9 @@ dependencies = [
 name = "pr_engine"
 version = "0.0.1"
 dependencies = [
+ "gl",
  "numix",
- "probably_fine_log",
+ "probably_fine_log 0.1.0",
  "windowed",
 ]
 
@@ -82,10 +83,17 @@ name = "probably_fine_log"
 version = "0.1.0"
 
 [[package]]
+name = "probably_fine_log"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "83c9428518145f4ea4c83d150d3537520b8b049538e6f670ca406219594ab670"
+
+[[package]]
 name = "windowed"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "gl",
+ "probably_fine_log 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
