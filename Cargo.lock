@@ -3,10 +3,14 @@
 version = 4
 
 [[package]]
-name = "cfg-if"
-version = "1.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801"
+name = "engine"
+version = "0.1.0"
+dependencies = [
+ "gl",
+ "numix",
+ "probably_fine_log 0.1.0",
+ "windowed",
+]
 
 [[package]]
 name = "gl"
@@ -35,16 +39,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2db585e1d738fc771bf08a151420d3ed193d9d895a36df7f6f8a9456b911ddc"
 
 [[package]]
-name = "libloading"
-version = "0.8.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7c4b02199fee7c5d21a5ae7d8cfa79a6ef5bb2fc834d6e9058e89c825efdc55"
-dependencies = [
- "cfg-if",
- "windows-link",
-]
-
-[[package]]
 name = "log"
 version = "0.4.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -53,30 +47,6 @@ checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
 [[package]]
 name = "numix"
 version = "0.1.5"
-
-[[package]]
-name = "pr_api"
-version = "0.0.1"
-dependencies = [
- "libloading",
-]
-
-[[package]]
-name = "pr_engine"
-version = "0.0.1"
-dependencies = [
- "gl",
- "numix",
- "probably_fine_log 0.1.0",
- "windowed",
-]
-
-[[package]]
-name = "pr_test"
-version = "0.0.1"
-dependencies = [
- "pr_api",
-]
 
 [[package]]
 name = "probably_fine_log"
@@ -95,12 +65,6 @@ dependencies = [
  "gl",
  "probably_fine_log 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
-
-[[package]]
-name = "windows-link"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0805222e57f7521d6a62e36fa9163bc891acd422f971defe97d64e70d0a4fe5"
 
 [[package]]
 name = "xml-rs"
