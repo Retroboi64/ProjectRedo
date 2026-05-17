@@ -7,3 +7,6 @@
 [submodule "vendor/probably_fine_log"]
 	path = vendor/probably_fine_log
 	url = https://github.com/Retroboi64/probably_fine_log.git
+[submodule "vendor/nmmesh"]
+	path = vendor/nmmesh
+	url = https://github.com/Retroboi64/rmmesh.git

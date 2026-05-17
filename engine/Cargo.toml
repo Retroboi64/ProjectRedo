@@ -8,3 +8,4 @@ gl = "0.14.0"
 windowed = { path = "../vendor/windowed" }
 probably_fine_log = { path = "../vendor/probably_fine_log" }
 numix = { path = "../vendor/numix" }
+rmmesh = { path = "../vendor/rmmesh" }

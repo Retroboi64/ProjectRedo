@@ -1,28 +1,26 @@
+mod camera;
+mod mesh;
+mod scene;
 mod shader;
 
+use mesh::Mesh;
+use numix::types::Mat4x4;
+use numix::types::Vec3;
+use scene::{NodeKind, Scene};
 use shader::ShaderManager;
-
-#[rustfmt::skip]
-const VERTICES: [f32; 9] = [
-    -0.5, -0.5, 0.0,   // bottom-left
-     0.5, -0.5, 0.0,   // bottom-right
-     0.0,  0.5, 0.0,   // top-center
-];
 
 pub(crate) struct Renderer {
     m_shader: ShaderManager,
-
-    vao: u32,
-    vbo: u32,
+    scene: Scene,
+    angle: f32,
 }
 
 impl Renderer {
     pub(crate) fn new() -> Self {
         Self {
             m_shader: ShaderManager::new(),
-
-            vao: 0u32,
-            vbo: 0u32,
+            scene: Scene::new(),
+            angle: 0.0,
         }
     }
 
@@ -30,41 +28,62 @@ impl Renderer {
         self.m_shader
             .add_shader("main", "./res/main.vert", "./res/main.frag");
 
-        unsafe {
-            gl::GenVertexArrays(1, &mut self.vao);
-            gl::GenBuffers(1, &mut self.vbo);
+        let root = self.scene.root_id();
+        let pivot = self.scene.add_node("pivot", NodeKind::Empty, root);
 
-            gl::BindVertexArray(self.vao);
-            gl::BindBuffer(gl::ARRAY_BUFFER, self.vbo);
-            gl::BufferData(
-                gl::ARRAY_BUFFER,
-                (VERTICES.len() * std::mem::size_of::<f32>()) as isize,
-                VERTICES.as_ptr().cast(),
-                gl::STATIC_DRAW,
-            );
-            gl::VertexAttribPointer(
-                0,
-                3,
-                gl::FLOAT,
-                gl::FALSE,
-                (3 * std::mem::size_of::<f32>()) as i32,
-                std::ptr::null(),
-            );
-            gl::EnableVertexAttribArray(0);
-            gl::BindBuffer(gl::ARRAY_BUFFER, 0);
-            gl::BindVertexArray(0);
+        let cube_a =
+            self.scene
+                .add_node("cube_a", NodeKind::MeshNode(Mesh::cube("cube_a", 0)), pivot);
+        self.scene.node_mut(cube_a).transform.position = Vec3::new(1.5, 0.0, 0.0);
+
+        unsafe {
+            gl::Enable(gl::DEPTH_TEST);
         }
     }
 
     pub fn run(&mut self) {
-        let shader = self.m_shader.get_shader_by_id(0);
-        unsafe {
-            gl::ClearColor(0.15, 0.15, 0.2, 1.0);
-            gl::Clear(gl::COLOR_BUFFER_BIT);
+        self.angle = (self.angle + 0.5) % 360.0;
 
-            gl::UseProgram(shader);
-            gl::BindVertexArray(self.vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, 3);
+        self.scene.node_mut(1).transform.rotation.y = self.angle.to_radians();
+
+        self.scene.update();
+
+        let aspect: f32 = 800.0 / 600.0;
+        let cam_pos: Vec3<f32> = Vec3::new(0.0, 2.0, 6.0);
+        let proj = perspective(45_f32.to_radians(), aspect, 0.1, 100.0);
+        let view = look_at(cam_pos, Vec3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
+        let view_proj = proj * view;
+
+        let shader = self.m_shader.get_shader_by_id(0);
+
+        unsafe {
+            gl::ClearColor(0.1, 0.1, 0.15, 1.0);
+            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+            gl::UseProgram(shader.program());
+
+            shader.set_uniform_vec3("uCamPos\0", cam_pos);
+            shader.set_uniform_vec3("uLightDir\0", Vec3::new(0.6, 1.0, 0.8));
+            shader.set_uniform_vec3("uLightColor\0", Vec3::new(1.0, 1.0, 0.95));
+            shader.set_uniform_vec3("uBaseColor\0", Vec3::new(1.0, 0.55, 0.3));
         }
+
+        self.scene.draw(shader.program(), view_proj);
     }
+}
+
+fn perspective(fovy_rad: f32, aspect: f32, near: f32, far: f32) -> Mat4x4<f32> {
+    Mat4x4::perspective(fovy_rad, aspect, near, far)
+}
+
+fn look_at(eye: Vec3<f32>, target: Vec3<f32>, up: Vec3<f32>) -> Mat4x4<f32> {
+    let f = (target - eye).normalize();
+    let r = f.cross(up).normalize();
+    let u = r.cross(f);
+
+    Mat4x4::from([
+        [r.x, r.y, r.z, -r.dot(eye)],
+        [u.x, u.y, u.z, -u.dot(eye)],
+        [-f.x, -f.y, -f.z, f.dot(eye)],
+        [0.0, 0.0, 0.0, 1.0],
+    ])
 }

@@ -1,6 +1,7 @@
 mod common;
 mod engine;
 mod input;
+mod math;
 mod renderer;
 mod util;
 

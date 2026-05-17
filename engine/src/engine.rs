@@ -1,4 +1,4 @@
-use windowed::{ControlFlow, Event, Key, Window, WindowConfig};
+use windowed::{ControlFlow, Event, Window, WindowConfig};
 
 use crate::input::Input;
 use crate::renderer::Renderer;
@@ -7,7 +7,6 @@ pub struct Engine {
     window: Window,
     pub renderer: Renderer,
     pub input: Input,
-    is_running: bool,
 }
 
 impl Engine {
@@ -31,7 +30,6 @@ impl Engine {
             window,
             renderer,
             input: Input::new(),
-            is_running: false,
         }
     }
 
@@ -46,7 +44,9 @@ impl Engine {
         window
             .run(move |event, win| {
                 match event {
-                    Event::CloseRequested => return ControlFlow::Exit,
+                    Event::CloseRequested => {
+                        return ControlFlow::Exit;
+                    }
 
                     Event::KeyDown(key) => {
                         input.process_key_down(key);
@@ -73,9 +73,5 @@ impl Engine {
                 ControlFlow::Continue
             })
             .unwrap();
-    }
-
-    pub fn is_running(&self) -> bool {
-        self.is_running
     }
 }
